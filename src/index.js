@@ -1,14 +1,23 @@
-import 'dotenv/config';
-import cors from 'cors';
-import express from 'express';
+import "dotenv/config";
+import cors from "cors";
+import express from "express";
+import connectDb from "./services/connectDb";
+import routes from "./services/routes";
 
 const app = express();
 
 app.use(cors());
 
-app.get('/', (req, res) => {
-    res.send('Hello world');
-});
+routes(app);
 
-app.listen(3000, () => 
-console.log("App running on port 3000"));
+connectDb()
+  .then(async () => {
+    console.log("Connceted to db");
+
+    //Run server once the db is connected.
+    app.listen(3000, () => console.log("App running on port 3000"));
+  })
+  .catch((e) => {
+    console.log("Error Connecting to the db. Can't start server");
+    console.log(e);
+  });
