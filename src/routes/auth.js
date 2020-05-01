@@ -1,9 +1,9 @@
 import express from "express";
 import passport from "passport";
 var FacebookStrategy = require("passport-facebook").Strategy;
-const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
 const router = express.Router();
-const User = require('../models/User');
+const User = require("../models/User");
 import model from "../models";
 
 passport.use(
@@ -46,20 +46,24 @@ router.get("/failure", (req, res) => {
   res.send("failure of auth");
 });
 
-
-
-passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "http://localhost:3000/auth/google/callback"
-},
-  (accessToken, refreshToken, profile, done) => {
-    console.log(profile._json)
-     const user = new model.user({email: profile._json.email, name: profile._json.name});
-     const savedUser = user.save();
-     done(null, profile);
-}
-));
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: "http://localhost:3000/auth/google/callback",
+    },
+    (accessToken, refreshToken, profile, done) => {
+      console.log(profile._json);
+      const user = new model.user({
+        email: profile._json.email,
+        name: profile._json.name,
+      });
+      const savedUser = user.save();
+      done(null, profile);
+    }
+  )
+);
 
 router.get("/", (req, res) => {
   res.send("Hello World");
