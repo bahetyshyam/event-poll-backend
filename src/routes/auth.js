@@ -10,60 +10,60 @@ import isLoggedIn from "../middleware/isLoggedIn";
 // const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
 
 router.get("/", isLoggedIn, (req, res) => {
-  res.send(req.user);
+	res.send(req.user);
 });
 
 router.post("/register", async (req, res) => {
-  const { error } = models.user.validateUser(req.body);
-  if (error) {
-    return res.status(400).send(error.details[0].message);
-  }
+	const { error } = models.user.validateUser(req.body);
+	if (error) {
+		return res.status(400).send(error.details[0].message);
+	}
 
-  const emailExist = await models.user.findOne({ email: req.body.email });
-  if (emailExist) {
-    return res.status(400).send("User already exists");
-  }
+	const emailExist = await models.user.findOne({ email: req.body.email });
+	if (emailExist) {
+		return res.status(400).send("User already exists");
+	}
 
-  //Hashing the password
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(req.body.password, salt);
+	//Hashing the password
+	const salt = await bcrypt.genSalt(10);
+	const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
-  const newUser = new models.user({
-    name: req.body.name,
-    email: req.body.email,
-    password: hashedPassword,
-  });
+	const newUser = new models.user({
+		name: req.body.name,
+		email: req.body.email,
+		password: hashedPassword,
+	});
 
-  try {
-    const savedUser = await newUser.save();
-    res.json({ success: true, user: savedUser });
-  } catch (err) {
-    res.status(400).send(err);
-  }
+	try {
+		const savedUser = await newUser.save();
+		res.json({ success: true, user: savedUser });
+	} catch (err) {
+		res.status(400).send(err);
+	}
 });
 
 router.post("/login", async (req, res) => {
-  const user = await models.user.findOne({ email: req.body.email });
-  if (!user) {
-    return res.status(401).send({ success: false, message: "User not found." });
-  }
+	const user = await models.user.findOne({ email: req.body.email });
+	if (!user) {
+		return res.status(401).send({ success: false, message: "User not found." });
+	}
 
-  const isValidPassword = await bcrypt.compare(
-    req.body.password,
-    user.password
-  );
+	const isValidPassword = await bcrypt.compare(
+		req.body.password,
+		user.password
+	);
 
-  if (!isValidPassword) {
-    return res
-      .status(401)
-      .send({ success: false, message: "Invalid password." });
-  } else {
-    console.log("passwords are same");
-  }
+	if (!isValidPassword) {
+		return res
+			.status(401)
+			.send({ success: false, message: "Invalid password." });
+	} else {
+		console.log("passwords are same");
+	}
 
-  //Assign Token
-  const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
-  res.send({ auth: true, token });
+	//Assign Token
+	const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+	res.send({ auth: true, token });
 });
 
 // passport.use(
