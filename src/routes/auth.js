@@ -9,10 +9,12 @@ import isLoggedIn from "../middleware/isLoggedIn";
 // var FacebookStrategy = require("passport-facebook").Strategy;
 // const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
 
+//Test api for if the user is logged in middleware
 router.get("/", isLoggedIn, (req, res) => {
 	res.send(req.user);
 });
 
+//Endpoint to register a new user
 router.post("/register", async (req, res) => {
 	const { error } = models.user.validateUser(req.body);
 	if (error) {
@@ -42,6 +44,8 @@ router.post("/register", async (req, res) => {
 	}
 });
 
+
+//Endpoint to login a new user.
 router.post("/login", async (req, res) => {
 	const user = await models.user.findOne({ email: req.body.email });
 	if (!user) {
@@ -66,6 +70,15 @@ router.post("/login", async (req, res) => {
 	res.send({ auth: true, token });
 });
 
+
+// passport.serializeUser((user, done) => {
+//   done(null, user);
+// });
+
+// passport.deserializeUser((obj, done) => {
+//   done(null, obj);
+// });
+
 // passport.use(
 //   new FacebookStrategy(
 //     {
@@ -83,14 +96,6 @@ router.post("/login", async (req, res) => {
 //     }
 //   )
 // );
-
-// passport.serializeUser((user, done) => {
-//   done(null, user);
-// });
-
-// passport.deserializeUser((obj, done) => {
-//   done(null, obj);
-// });
 
 // router.get("/facebook", passport.authenticate("facebook"));
 
@@ -124,5 +129,16 @@ router.post("/login", async (req, res) => {
 //     }
 //   )
 // );
+
+// router.get('google',
+// 	passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login', 'https://www.googleapis.com/auth/userinfo.email'] }));
+
+// router.get('google/callback',
+// 	passport.authenticate('google', { successRedirect: "/", failureRedirect: '/login' }));
+
+
+// router.get("/", (req, res) => {
+// 	res.send("Success");
+// });
 
 export default router;

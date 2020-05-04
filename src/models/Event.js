@@ -12,7 +12,7 @@ const eventSchema = new mongoose.Schema({
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    }, 
+    },
     group: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Group'
@@ -37,4 +37,4 @@ const eventSchema = new mongoose.Schema({
     ]
 });
 
-module.exports =  mongoose.model("Event", eventSchema);
+export default mongoose.model("Event", eventSchema);
