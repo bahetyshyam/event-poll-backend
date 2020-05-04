@@ -5,10 +5,6 @@ import connectDb from "./services/connectDb";
 import routes from "./services/routes";
 import passport from "passport";
 
-import mongoose from 'mongoose';
-import models from './models';
-
-
 const app = express();
 
 app.use(cors());
