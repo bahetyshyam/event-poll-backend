@@ -11,7 +11,7 @@ router.get('/:groupId', async (req, res) => {
         return res.status(200).send({
             success: true,
             members: result.members
-        })
+        }) 
     }
     catch (err) {
         return res.status(401).send({
@@ -19,6 +19,8 @@ router.get('/:groupId', async (req, res) => {
         });
     }
 });
+
+//addition of user endpoint comes here.
 
 
 

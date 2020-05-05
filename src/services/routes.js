@@ -13,5 +13,4 @@ export default function (app) {
     app.all('*', (req, res) => {
         res.status(404).send({ success: false, message: 'Endpoint not found.' });
     });
-
 }
