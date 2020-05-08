@@ -61,8 +61,6 @@ router.post("/login", async (req, res) => {
 		return res
 			.status(401)
 			.send({ success: false, message: "Invalid password." });
-	} else {
-		console.log("passwords are same");
 	}
 
 	//Assign Token
