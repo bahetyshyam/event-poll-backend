@@ -1,19 +1,19 @@
 import express from "express";
 import mongoose from "mongoose";
 import models from "../models";
+import isLoggedIn from "../middleware/isLoggedIn";
 const router = express.Router();
 
 
 //get api goes here
-router.get('/:userId', async (req, res) => {
-    const userId = mongoose.Types.ObjectId(req.params.userId);
-    
+router.get('/', isLoggedIn, async (req, res) => {
+    const userId = req.user._id;
+
     try {
-        const result = await models.group.find({members: userId}, 'name');
-        console.log(result);
+        const result = await models.group.find({members: userId});
         return res.status(200).send({
             success: true,
-            name: result
+            groups: result
         })
     }
     catch (err) {
