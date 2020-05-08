@@ -27,11 +27,19 @@ router.post('/:groupId', async (req, res) => {
     const groupId = req.params.groupId;
     //Obtain the user id of the user which is searched
     const user_id = mongoose.Types.ObjectId(req.body._id);
-
-    const memberExists = await models.group.findOne({ members: user_id });
-    if (memberExists) {
-		return res.status(400).send("Member already exists");
-	}
+    try {
+        const memberExists = await models.group.findOne({ members: user_id });
+        if (memberExists) {
+		    return res.status(400).send("Member already exists");
+	    }
+    }
+    catch (err) {
+        return res.status(400).send({
+            success: false,
+            message: "Invalid group id or member id",
+            error: err
+        });
+    }
 
     try {
         const result = await models.group.findByIdAndUpdate(groupId, 
