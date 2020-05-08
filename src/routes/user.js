@@ -27,12 +27,12 @@ router.post('/:groupId', async (req, res) => {
     const groupId = req.params.groupId;
     //Obtain the user id of the user which is searched
     const user_id = mongoose.Types.ObjectId(req.body._id);
-
+  
+  
     //try catch block to check if the member already exists in the particular group, if not, it returns a null object and 
     //moves the control over to the next try catch block
     try {
         const memberExists = await models.group.findOne({ _id: groupId, members: user_id });
-
         if (memberExists) {
             return res.status(400).send({
                 success: false,
