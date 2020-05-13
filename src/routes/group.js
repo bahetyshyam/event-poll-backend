@@ -1,5 +1,4 @@
 import express from "express";
-
 import mongoose from "mongoose";
 import models from "../models";
 import isLoggedIn from "../middleware/isLoggedIn";
@@ -11,7 +10,7 @@ router.get('/', isLoggedIn, async (req, res) => {
     const userId = req.user._id;
 
     try {
-        const result = await models.group.find({members: userId});
+        const result = await models.group.find({ members: userId });
         return res.status(200).send({
             success: true,
             groups: result
