@@ -9,6 +9,23 @@ const eventSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    schedule: {
+        type: Date
+    },
+    location: {
+        latitude: {
+            type: Number
+        },
+        longitude: {
+            type: Number
+        },
+        locationName: {
+            type: String
+        }
+    },
+    description: {
+        type: String
+    },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
