@@ -27,20 +27,47 @@ router.post('/:groupId', async (req, res) => {
     const groupId = req.params.groupId;
     //Obtain the user id of the user which is searched
     const user_id = mongoose.Types.ObjectId(req.body._id);
-
-    const memberExists = await models.group.findOne({ members: user_id });
-    if (memberExists) {
-		return res.status(400).send("Member already exists");
-	}
-
+  
+  
+    //try catch block to check if the member already exists in the particular group, if not, it returns a null object and 
+    //moves the control over to the next try catch block
     try {
-        const result = await models.group.findByIdAndUpdate(groupId, 
+        const memberExists = await models.group.findOne({ _id: groupId, members: user_id });
+        if (memberExists) {
+            return res.status(400).send({
+                success: false,
+                message: "Member already exists"
+            });
+        }
+    }
+    catch (err) {
+        return res.status(400).send({
+            success: false,
+            message: "Invalid group id or member id",
+            error: err
+        });
+    }
+
+
+    //try catch block to update the member in that group, if the group does not exist, it returns a null object
+    try {
+        const result = await models.group.findByIdAndUpdate(groupId,
             {
-                $push : {
-                    "members" : user_id
+                $push: {
+                    "members": user_id
                 }
             });
-        res.json({ success: true, group: result });
+
+        //checks if it returns a null object.
+        if (result) {
+            return res.status(200).send({ success: true, group: result });
+        }
+        else {
+            return res.status(401).send({
+                success: false, message: "Group Not Found"
+            });
+        }
+
     }
     catch (err) {
         return res.status(401).send({
