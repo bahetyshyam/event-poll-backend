@@ -6,7 +6,7 @@ import models from "../models";
 import isLoggedIn from "../middleware/isLoggedIn";
 
 
-//Events GET API
+//Events GET API to extract events from groups that a user is in
 router.get('/', isLoggedIn, async (req, res) => {
     const userId = req.user._id;
 
