@@ -10,10 +10,10 @@ router.get('/', isLoggedIn, async (req, res) => {
     const userId = req.user._id;
 
     try {
-        const groups = await models.group.find({members: userId});
+        const groups = await models.group.find({ members: userId });
         const group_ids = groups.map(g => g._id);
 
-        const result = await models.event.find({group: group_ids});
+        const result = await models.event.find({ group: group_ids });
 
         return res.status(200).send({
             success: true,
