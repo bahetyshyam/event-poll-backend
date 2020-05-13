@@ -1,8 +1,31 @@
 import express from "express";
-import mongoose, { model } from "mongoose";
+const router = express.Router();
+import mongoose from "mongoose";
 import models from "../models";
 import isLoggedIn from "../middleware/isLoggedIn";
-const router = express.Router();
+
+
+//Events GET API to extract events from groups that a user is in
+router.get('/', isLoggedIn, async (req, res) => {
+    const userId = req.user._id;
+
+    try {
+        const groups = await models.group.find({members: userId});
+        const group_ids = groups.map(g => g._id);
+
+        const result = await models.event.find({group: group_ids});
+
+        return res.status(200).send({
+            success: true,
+            events: result
+        })
+    }
+    catch (err) {
+        return res.status(401).send({
+            success: false, message: "User Not Found", error: err
+        });
+    }
+})
 
 //Format to send the data to this api
 // {
@@ -39,8 +62,6 @@ router.post('/', isLoggedIn, async (req, res) => {
     catch (err) {
         res.status(400).json({ success: false, error: err })
     }
-
-
 })
 
 export default router;
