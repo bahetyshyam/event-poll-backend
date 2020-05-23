@@ -5,7 +5,7 @@ import connectDb from "./services/connectDb";
 import routes from "./services/routes";
 import passport from "passport";
 
-var port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
 const app = express();
 
