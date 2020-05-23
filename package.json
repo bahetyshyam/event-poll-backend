@@ -2,9 +2,12 @@
   "name": "yes-maybe-no",
   "version": "1.0.0",
   "description": "A backend server for the event polling application.",
-  "main": "index.js",
+  "engines": {
+    "node": "12.16.3"
+  },
+  "main": "src/index.js",
   "scripts": {
-    "server": "nodemon --exec babel-node src/index.js",
+    "server": "nodemon src/index.js --exec babel-node",
     "start": "babel-node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "heroku-postbuild": "npm install"
