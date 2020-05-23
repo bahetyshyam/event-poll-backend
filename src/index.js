@@ -5,6 +5,8 @@ import connectDb from "./services/connectDb";
 import routes from "./services/routes";
 import passport from "passport";
 
+var port = process.env.PORT || 3000;
+
 const app = express();
 
 app.use(cors());
@@ -18,7 +20,7 @@ connectDb()
     console.log("Connceted to db");
 
     //Run server once the db is connected.
-    app.listen(3000, () => console.log("App running on port 3000"));
+    app.listen(port, () => console.log("App running on port 3000"));
   })
   .catch((e) => {
     console.log("Error Connecting to the db. Can't start server");
