@@ -6,7 +6,8 @@
   "scripts": {
     "server": "nodemon --exec babel-node src/index.js",
     "start": "babel-node src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "heroku-postbuild": "npm install"
   },
   "author": "Shyam Bahety & Sharath S",
   "license": "ISC",
