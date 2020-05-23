@@ -20,7 +20,7 @@ routes(app);
 
 connectDb()
   .then(async () => {
-    console.log("Connceted to db");
+    console.log("Connected to db");
 
     //Run server once the db is connected.
     app.listen(port, () => console.log("App running on port 3000"));
