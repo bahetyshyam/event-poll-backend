@@ -11,63 +11,65 @@ import isLoggedIn from "../middleware/isLoggedIn";
 
 //Test api for if the user is logged in middleware
 router.get("/", isLoggedIn, (req, res) => {
-	res.send(req.user);
+  res.send(req.user);
 });
 
 //Endpoint to register a new user
 router.post("/register", async (req, res) => {
-	const { error } = models.user.validateUser(req.body);
-	if (error) {
-		return res.status(400).send(error.details[0].message);
-	}
+  const { error } = models.user.validateUser(req.body);
+  if (error) {
+    return res.status(400).send(error.details[0].message);
+  }
 
-	const emailExist = await models.user.findOne({ email: req.body.email });
-	if (emailExist) {
-		return res.status(400).send("User already exists");
-	}
+  const emailExist = await models.user.findOne({ email: req.body.email });
+  if (emailExist) {
+    return res.status(400).send("User already exists");
+  }
 
-	//Hashing the password
-	const salt = await bcrypt.genSalt(10);
-	const hashedPassword = await bcrypt.hash(req.body.password, salt);
+  //Hashing the password
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
-	const newUser = new models.user({
-		name: req.body.name,
-		email: req.body.email,
-		password: hashedPassword,
-	});
+  const newUser = new models.user({
+    name: req.body.name,
+    email: req.body.email,
+    password: hashedPassword,
+  });
 
-	try {
-		const savedUser = await newUser.save();
-		res.json({ success: true, user: savedUser });
-	} catch (err) {
-		res.status(400).send(err);
-	}
+  try {
+    const savedUser = await newUser.save();
+    const returnUser = savedUser.toObject();
+    delete returnUser.password;
+    res.json({ success: true, user: returnUser });
+  } catch (err) {
+    res.status(400).send(err);
+  }
 });
-
 
 //Endpoint to login a new user.
 router.post("/login", async (req, res) => {
-	const user = await models.user.findOne({ email: req.body.email });
-	if (!user) {
-		return res.status(401).send({ success: false, message: "User not found." });
-	}
+  var user = await models.user.findOne({ email: req.body.email });
+  if (!user) {
+    return res.status(401).send({ success: false, message: "User not found." });
+  }
 
-	const isValidPassword = await bcrypt.compare(
-		req.body.password,
-		user.password
-	);
+  const isValidPassword = await bcrypt.compare(
+    req.body.password,
+    user.password
+  );
 
-	if (!isValidPassword) {
-		return res
-			.status(401)
-			.send({ success: false, message: "Invalid password." });
-	}
+  if (!isValidPassword) {
+    return res
+      .status(401)
+      .send({ success: false, message: "Invalid password." });
+  }
 
-	//Assign Token
-	const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
-	res.send({ auth: true, token });
+  const returnUser = user.toObject();
+  delete returnUser.password;
+  //Assign Token
+  const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+  res.send({ success: true, token, user: returnUser });
 });
-
 
 // passport.serializeUser((user, done) => {
 //   done(null, user);
@@ -133,7 +135,6 @@ router.post("/login", async (req, res) => {
 
 // router.get('google/callback',
 // 	passport.authenticate('google', { successRedirect: "/", failureRedirect: '/login' }));
-
 
 // router.get("/", (req, res) => {
 // 	res.send("Success");

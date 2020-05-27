@@ -1,5 +1,5 @@
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
+import "core-js/stable";
+import "regenerator-runtime/runtime";
 
 import "dotenv/config";
 import cors from "cors";
@@ -23,7 +23,7 @@ connectDb()
     console.log("Connected to db");
 
     //Run server once the db is connected.
-    app.listen(port, () => console.log("App running on port 3000"));
+    app.listen(port, () => console.log(`App running on port ${port}`));
   })
   .catch((e) => {
     console.log("Error Connecting to the db. Can't start server");
