@@ -1,57 +1,34 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema } from "mongoose";
 
-const eventSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    createdOn: {
-        type: Date,
-        default: Date.now
-    },
-    schedule: {
-        type: Date
-    },
-    location: {
-        latitude: {
-            type: Number
+const eventSchema = new Schema(
+    {
+        name: { type: String, required: true },
+        schedule: { type: Date },
+        location: {
+            latitude: { type: Number },
+            longitude: { type: Number },
+            name: { type: String },
         },
-        longitude: {
-            type: Number
+        description: { type: String },
+        createdBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
         },
-        locationName: {
-            type: String
-        }
-    },
-    description: {
-        type: String
-    },
-    createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    },
-    group: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Group'
-    },
-    yes: [
-        {
+        group: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        }
-    ],
-    no: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        }
-    ],
-    maybe: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        }
-    ]
-});
+            ref: "Group",
+        },
+        responses: [
+            {
+                user: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User",
+                },
+                value: { type: String, enum: ["yes", "no", "maybe"] },
+            },
+        ],
+    },
+    { timestamps: true }
+);
 
 export default mongoose.model("Event", eventSchema);
