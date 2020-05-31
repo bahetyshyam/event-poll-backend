@@ -12,9 +12,29 @@ router.get("/", isLoggedIn, async (req, res) => {
     const groups = await models.group.find({ members: userId });
     const group_ids = groups.map((g) => g._id);
 
-    const result = await models.event
-      .find({ group: group_ids })
-      .populate("group");
+    const result = await models.event.aggregate([
+      { $match: { group: { $in: group_ids } } },
+      {
+        $lookup: {
+          from: "responses",
+          localField: "_id",
+          foreignField: "event",
+          as: "responses",
+        },
+      },
+      {
+        $lookup: {
+          from: "groups",
+          localField: "group",
+          foreignField: "_id",
+          as: "group",
+        },
+      },
+    ]);
+
+    // const result = await models.event
+    //   .find({ group: group_ids })
+    //   .populate("group");
 
     return res.status(200).send({
       success: true,
@@ -25,6 +45,67 @@ router.get("/", isLoggedIn, async (req, res) => {
       success: false,
       message: "User Not Found",
       error: err,
+    });
+  }
+});
+
+//Events get API to a single event information
+router.get("/:eventId", isLoggedIn, async (req, res) => {
+  try {
+    const event = await models.event.aggregate([
+      {
+        $match: { _id: mongoose.Types.ObjectId(req.params.eventId) },
+      },
+      {
+        $lookup: {
+          from: "responses",
+          localField: "_id",
+          foreignField: "event",
+          as: "responses",
+        },
+      },
+      { $unwind: "$responses" },
+      {
+        $lookup: {
+          from: "users",
+          localField: "responses.user",
+          foreignField: "_id",
+          as: "responses.user",
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          responses: { $push: "$responses" },
+          name: { $first: "$name" },
+          schedule: { $first: "$schedule" },
+          location: { $first: "$location" },
+          description: { $first: "$description" },
+          createdBy: { $first: "$createdBy" },
+          group: { $first: "$group" },
+          createdAt: { $first: "$createdAt" },
+          updatedAt: { $first: "$updatedAt" },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "createdBy",
+        },
+      },
+    ]);
+
+    res.send({
+      success: true,
+      event: event,
+    });
+  } catch (error) {
+    res.status(401).send({
+      success: false,
+      message: "No such event found",
+      error: error,
     });
   }
 });
@@ -40,7 +121,7 @@ router.get("/", isLoggedIn, async (req, res) => {
 // 	"group" : "5eb5764614fac40cd4187e57"
 // }
 router.post("/", isLoggedIn, async (req, res) => {
-  const userId = mongoose.Types.ObjectId(req.userId);
+  const userId = mongoose.Types.ObjectId(req.user._id);
 
   let schedule = new Date(req.body.schedule);
 
@@ -63,6 +144,31 @@ router.post("/", isLoggedIn, async (req, res) => {
   } catch (err) {
     res.status(400).json({ success: false, error: err });
   }
+});
+
+//Update the reponse of a particular user for a particular
+router.patch("/:eventId/:response", isLoggedIn, async (req, res) => {
+  try {
+    const response = await models.response.updateOne(
+      { event: req.params.eventId, user: req.user._id },
+      {
+        $set: {
+          response: req.params.response,
+        },
+      },
+      { upsert: true }
+    );
+  } catch (error) {
+    res.status(401).send({
+      success: false,
+      message: "Invalid Input",
+      error: error,
+    });
+  }
+  res.send({
+    success: true,
+    message: "Response Updated",
+  });
 });
 
 export default router;

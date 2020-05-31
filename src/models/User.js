@@ -1,21 +1,24 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import Joi from "@hapi/joi";
 
-const userSchema = mongoose.Schema({
-  name: {
-    type: String,
+const userSchema = new Schema(
+  {
+    name: {
+      type: String,
+    },
+    email: {
+      type: String,
+    },
+    password: {
+      type: String,
+    },
+    createdOn: {
+      type: Date,
+      default: Date.now,
+    },
   },
-  email: {
-    type: String,
-  },
-  password: {
-    type: String,
-  },
-  createdOn: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  { timestamps: true }
+);
 
 userSchema.statics.validateUser = (data) => {
   const schema = Joi.object({

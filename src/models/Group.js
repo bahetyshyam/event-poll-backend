@@ -1,30 +1,33 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from "mongoose";
 
-const groupSchema = new mongoose.Schema({
+const groupSchema = new Schema(
+  {
     name: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     createdOn: {
-        type: Date,
-        default: Date.now
+      type: Date,
+      default: Date.now,
     },
     createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
     admins: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        }
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
     ],
     members: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        }
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
     ],
-});
+  },
+  { timestamps: true }
+);
 
-export default mongoose.model('Group', groupSchema);
+export default mongoose.model("Group", groupSchema);
