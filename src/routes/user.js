@@ -78,4 +78,22 @@ router.post("/:groupId", async (req, res) => {
   }
 });
 
+// router.get("search/:searchTerm", async (req, res) => {
+//   let searchTerm = req.params.searchTerm;
+
+//   try {
+//     const result = User.find({name: {$regex: "/" + searchTerm + "/", $options: "i"}})
+//     return res.status(200).send({
+//       success: true,
+//       users: result,
+//     });
+//   } catch(err) {
+//     return res.status(401).send({
+//       success: false,
+//       message: "No users found",
+//       error: err,
+//     });
+//   }
+// })
+
 export default router;
