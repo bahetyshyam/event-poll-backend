@@ -1,7 +1,6 @@
 import express from "express";
 import models from "../models";
 import mongoose from "mongoose";
-import User from "../models/User";
 const router = express.Router();
 
 //Endpoint to get all the users of a particular group
