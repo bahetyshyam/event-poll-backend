@@ -8,7 +8,7 @@ router.get("/:searchTerm", async (req, res) => {
     let searchTerm = req.params.searchTerm;
   
     try {
-      const result = await models.user.find({name: {$regex: searchTerm, $options: "i"}})
+      const result = await models.user.find({$or: [{name: {$regex: searchTerm, $options: "i"}}, {email: {$regex: searchTerm, $options: "i"}}]})
       return res.status(200).send({
         success: true,
         users: result,
