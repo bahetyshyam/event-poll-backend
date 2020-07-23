@@ -64,7 +64,12 @@ router.get("/:eventId", isLoggedIn, async (req, res) => {
           as: "responses",
         },
       },
-      { $unwind: "$responses" },
+      {
+        $unwind: {
+          path: "$responses",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
       {
         $lookup: {
           from: "users",
