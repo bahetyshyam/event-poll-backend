@@ -176,4 +176,39 @@ router.patch("/:eventId/:response", isLoggedIn, async (req, res) => {
   });
 });
 
+router.delete("/:eventId", isLoggedIn, async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const event = await models.event.findById(
+      mongoose.Types.ObjectId(req.params.eventId)
+    );
+    if (userId.toString() === event.createdBy.toString()) {
+      const deletedResponses = await models.response.deleteMany({
+        event: req.params.eventId,
+      });
+      const deletedEvent = await models.event.deleteOne({
+        _id: req.params.eventId,
+      });
+
+      res.json({
+        success: true,
+        deletedResponses,
+        deletedEvent,
+      });
+    } else {
+      res.status(401).json({
+        success: false,
+        message:
+          "You have to be the creator of this event to delete the event.",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "An Error Occured",
+      error: error,
+    });
+  }
+});
+
 export default router;
