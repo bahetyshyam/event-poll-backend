@@ -5,6 +5,7 @@ import "dotenv/config";
 import cors from "cors";
 import express from "express";
 import connectDb from "./services/connectDb";
+import prod from "./services/prod";
 import routes from "./services/routes";
 import passport from "passport";
 
@@ -16,6 +17,7 @@ app.use(cors());
 
 app.use(passport.initialize());
 
+if (process.env.NODE_ENV === "production") prod(app);
 routes(app);
 
 connectDb()
