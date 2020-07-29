@@ -152,10 +152,14 @@ router.post("/", isLoggedIn, async (req, res) => {
 });
 
 //Update the reponse of a particular user for a particular
-router.patch("/:eventId/:response", isLoggedIn, async (req, res) => {
+router.patch("/:eventId/:groupId/:response", isLoggedIn, async (req, res) => {
   try {
     const response = await models.response.updateOne(
-      { event: req.params.eventId, user: req.user._id },
+      {
+        event: req.params.eventId,
+        user: req.user._id,
+        group: req.params.groupId,
+      },
       {
         $set: {
           response: req.params.response,

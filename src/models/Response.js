@@ -12,6 +12,10 @@ const responseSchema = new Schema(
       ref: "User",
       required: true,
     },
+    group: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Group",
+    },
     response: {
       type: String,
     },

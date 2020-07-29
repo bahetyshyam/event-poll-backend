@@ -1,5 +1,5 @@
 import express from "express";
-import mongoose from "mongoose";
+import mongoose, { model } from "mongoose";
 import models from "../models";
 import isLoggedIn from "../middleware/isLoggedIn";
 const router = express.Router();
@@ -17,7 +17,7 @@ router.get("/", isLoggedIn, async (req, res) => {
   } catch (err) {
     return res.status(401).send({
       success: false,
-      message: "User Not Found",
+      message: "Groups Not Found",
       error: err,
     });
   }
@@ -46,6 +46,41 @@ router.post("/", isLoggedIn, async (req, res) => {
     res.json({ success: true, group: savedGroup });
   } catch (err) {
     res.status(400).json({ success: false, error: err });
+  }
+});
+
+router.delete("/:groupId", isLoggedIn, async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const deletedGroup = await models.group.deleteOne({
+      _id: req.params.groupId,
+      admins: userId,
+    });
+    if (deletedGroup.n === 0) {
+      res.status(401).json({
+        success: false,
+        message: "Unautorized access, you are not an admmin if this group",
+      });
+    } else {
+      //Block to delete the events and repsonses of the events present in the group
+      const deletedEvents = await models.event.deleteMany({
+        group: req.params.groupId,
+      });
+      const deletedResponses = await models.response.deleteMany({
+        group: req.params.groupId,
+      });
+      res.json({
+        success: true,
+        deletedGroup,
+        deletedEvents,
+        deletedResponses,
+      });
+    }
+  } catch (error) {
+    res.json({
+      success: false,
+      error,
+    });
   }
 });
 
