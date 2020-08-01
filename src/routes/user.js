@@ -9,11 +9,12 @@ router.get("/:groupId", async (req, res) => {
 
   try {
     const result = await models.group
-      .findById(groupId, "members")
-      .populate("members");
+      .findById(groupId, "members admins")
+      .populate("members admins");
     return res.status(200).send({
       success: true,
       members: result.members,
+      admins: result.admins,
     });
   } catch (err) {
     return res.status(401).send({
