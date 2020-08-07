@@ -8,9 +8,7 @@ router.get("/:groupId", async (req, res) => {
   const groupId = req.params.groupId;
 
   try {
-    const result = await models.group
-      .findById(groupId, "members admins")
-      .populate("members admins");
+    const result = await models.group.findById(groupId).populate("members");
     return res.status(200).send({
       success: true,
       members: result.members,
