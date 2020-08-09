@@ -1,10 +1,12 @@
 import express from "express";
 import models from "../models";
 import mongoose from "mongoose";
+import isLoggedIn from "../middleware/isLoggedIn";
+// import { async } from "regenerator-runtime";
 const router = express.Router();
 
 //Endpoint to get all the users of a particular group
-router.get("/:groupId", async (req, res) => {
+router.get("/:groupId", isLoggedIn, async (req, res) => {
   const groupId = req.params.groupId;
 
   try {
@@ -24,7 +26,7 @@ router.get("/:groupId", async (req, res) => {
 });
 
 //Endpoint to add a user as a member in a group
-router.post("/:groupId", async (req, res) => {
+router.post("/:groupId", isLoggedIn, async (req, res) => {
   const groupId = req.params.groupId;
   //Obtain the user id of the user which is searched
   const user_id = mongoose.Types.ObjectId(req.body._id);
@@ -72,6 +74,52 @@ router.post("/:groupId", async (req, res) => {
       success: false,
       message: "Group Not Found",
       error: err,
+    });
+  }
+});
+
+router.patch("/:groupId/updateAdmin", isLoggedIn, async (req, res) => {
+  const currentUserId = req.user._id;
+  let updateBody;
+  if (req.body.type === "add") {
+    updateBody = {
+      $push: {
+        admins: req.body.userId,
+      },
+    };
+  }
+  if (req.body.type === "remove") {
+    updateBody = {
+      $pull: {
+        admins: req.body.userId,
+      },
+    };
+  }
+  try {
+    const updatedGroup = await models.group.findOneAndUpdate(
+      {
+        _id: req.params.groupId,
+        admins: currentUserId,
+      },
+      updateBody,
+      {
+        new: true,
+      }
+    );
+    if (updatedGroup === null) {
+      res.status(401).json({
+        success: false,
+        message: "Unautorized access, you are not an admmin if this group",
+      });
+    }
+    res.json({
+      success: true,
+      updatedGroup,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error,
     });
   }
 });
