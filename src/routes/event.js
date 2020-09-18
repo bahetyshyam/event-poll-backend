@@ -14,6 +14,7 @@ router.get("/", isLoggedIn, async (req, res) => {
 
     const result = await models.event.aggregate([
       { $match: { group: { $in: group_ids } } },
+      { $sort: { schedule: -1 } },
       {
         $lookup: {
           from: "responses",
