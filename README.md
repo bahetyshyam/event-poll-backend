@@ -7,7 +7,5 @@ FrontEnd - [ReactNative](https://reactnative.dev/)
 BackEnd - [ExpressJS](https://expressjs.com/)  
 DataBase - [MongoDB](https://www.mongodb.com/)  
 
-The source code for the front end can be found [here](https://github.com/bahetyshyam/YesMaybeNo/).
-
-## Images and Screenshots
+The source code for the front end can be found [here](https://github.com/bahetyshyam/YesMaybeNo/).  
 
